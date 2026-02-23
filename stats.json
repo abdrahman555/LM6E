@@ -1,0 +1,9 @@
+{
+  "daily": [120, 150, 180, 200, 220, 250, 280],
+  "weekly": [840, 1050, 1260, 1400, 1540, 1750, 1960],
+  "monthly": [3600, 4500, 5400, 6000, 6600, 7500, 8400],
+  "co2": {"Rabat": 500, "Casablanca": 700, "Marrakech": 400, "Tangier": 300},
+  "fullBins": {"North": 5, "Center": 8, "South": 3},
+  "efficiency": [85, 88, 90, 92, 94, 96, 98],
+  "costSavings": {"Rabat": 2000, "Casablanca": 3000, "Marrakech": 1500, "Tangier": 1200}
+}

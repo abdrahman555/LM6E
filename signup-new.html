@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Smart Waste Management</title>
+    <link rel="stylesheet" href="signup-styles.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+	<div class="auth-page">
+		<div class="auth-card" role="main" aria-labelledby="auth-heading">
+			<img src="assets/images/lycee-logo.png" alt="LM6E Logo" class="auth-logo">
+			<h1 id="auth-heading" class="auth-title">Welcome to LM6E SMART</h1>
+			<p class="auth-sub">Create a new account</p>
+
+			<div class="signup-container">
+				<div class="signup-card">
+            <nav class="form-progress">
+                <div class="step active" data-step="1">
+                    <span class="step-number">1</span>
+                    <span class="step-text">Personal Info</span>
+                </div>
+                <div class="step" data-step="2">
+                    <span class="step-number">2</span>
+                    <span class="step-text">Location</span>
+                </div>
+                <div class="step" data-step="3">
+                    <span class="step-number">3</span>
+                    <span class="step-text">Account Mode</span>
+                </div>
+            </nav>
+
+            <form id="signupForm" class="multi-step-form">
+                <!-- Step 1: Personal Information -->
+                <section class="form-step active" data-step="1">
+                    <h2>Personal Information</h2>
+                    <div class="input-group">
+                        <label for="fullName">Full Name<span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="fullName" name="fullName" required>
+                            <span class="validation-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="username">Username<span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="username" name="username" required>
+                            <span class="validation-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email Address<span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" name="email" required>
+                            <span class="validation-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password<span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" name="password" required>
+                            <span class="validation-icon"></span>
+                        </div>
+                        <div class="password-strength"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirmPassword">Confirm Password<span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                            <span class="validation-icon"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 2: Location Details -->
+                <section class="form-step" data-step="2">
+                    <h2>Location Details</h2>
+                    <div class="input-group">
+                        <label for="country">Country<span class="required">*</span></label>
+                        <div class="select-wrapper">
+                            <select id="country" name="country" required>
+                                <option value="">Select your country</option>
+                                <option value="egypt">Egypt</option>
+                            </select>
+                            <span class="select-arrow"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="city">City<span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="city" name="city" required>
+                            <span class="validation-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="region">Region<span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="region" name="region" required>
+                            <span class="validation-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="streetAddress">Street Address<span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="streetAddress" name="streetAddress" required>
+                            <span class="validation-icon"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 3: Account Mode -->
+                <section class="form-step" data-step="3">
+                    <h2>Account Mode</h2>
+                    <div class="account-mode-selection">
+                        <label class="mode-card">
+                            <input type="radio" name="accountMode" value="admin" required>
+                            <div class="card-content">
+                                <span class="material-icons">shield</span>
+                                <h3>Admin Mode</h3>
+                                <p>Full access to all system data and all regions</p>
+                            </div>
+                        </label>
+
+                        <label class="mode-card">
+                            <input type="radio" name="accountMode" value="employer" required>
+                            <div class="card-content">
+                                <span class="material-icons">work</span>
+                                <h3>Employer Mode</h3>
+                                <p>Restricted access to data and functions only within your assigned street and region</p>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-note">
+                        <p><strong>Note:</strong> Your account mode determines your access level. Admin users can see everything, while Employer users are restricted to their selected location area.</p>
+                    </div>
+                </section>
+
+                <div class="form-navigation">
+                    <button type="button" class="btn btn-secondary prev-step" style="display: none;">Previous</button>
+                    <button type="button" class="btn btn-primary next-step">Next</button>
+                    <button type="submit" class="btn btn-success submit-form" style="display: none;">
+                        <span class="btn-text">Create Account</span>
+                        <span class="loader"></span>
+                    </button>
+                </div>
+            </form>
+
+			<div class="form-footer">
+				<a href="index.html" class="back-link">← Back to Home</a>
+			</div>
+		</div>
+	</div>
+
+	<script src="signup.js"></script>
+</body>
+</html>

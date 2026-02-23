@@ -1,0 +1,105 @@
+/* bins.css - styles for Bin Level Simulator */
+:root{
+  --bg:#0f1724;
+  --card:#0b1220;
+  --muted:#94a3b8;
+  --accent1:#22c55e; /* green */
+  --accent2:#f59e0b; /* orange */
+  --accent3:#ef4444; /* red */
+}
+
+*{box-sizing:border-box}
+body{font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,rgba(7,16,41,0.55),rgba(15,23,36,0.55)),url('assets/images/bg-courtyard.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed;background-blend-mode:overlay;color:#e6eef8;margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;position:relative}
+
+/* subtle overlay for better foreground contrast */
+body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,rgba(3,7,18,0.45),rgba(3,7,18,0.5));pointer-events:none;z-index:0}
+.page-header{padding:36px 20px 10px;text-align:center}
+.page-header h1{font-size:28px;margin:0 0 6px}
+.page-header .lead{color:var(--muted);margin:0}
+
+.bins-wrapper{width:100%;max-width:1200px;padding:20px}
+.controls{text-align:center;margin-bottom:18px}
+.controls button{background:linear-gradient(180deg,#1f2937,#0f1724);color:#fff;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;margin:0 6px;border-radius:10px;cursor:pointer;transition:transform .18s ease,box-shadow .18s}
+.controls button:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,0.45)}
+
+/* polished buttons */
+.controls button{background:linear-gradient(90deg,#0ea5a5,#06b6d4);border:none;padding:10px 16px;font-weight:600;letter-spacing:0.2px}
+.controls button:active{transform:translateY(1px)}
+
+.bins{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.bin-card{background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));padding:22px;border-radius:16px;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .35s cubic-bezier(.2,.9,.3,1),box-shadow .35s;perspective:1200px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px) saturate(120%)}
+.bin-card:active{transform:translateY(2px)}
+.bin-card:hover{transform:translateY(-10px) rotateX(6deg);box-shadow:0 30px 80px rgba(6,12,30,0.6)}
+
+.bin-tank{width:240px;height:440px;border-radius:14px;background:linear-gradient(180deg,#061020,#071427);position:relative;overflow:hidden;border:2px solid rgba(255,255,255,0.04);box-shadow:inset 0 10px 36px rgba(0,0,0,0.6),0 18px 64px rgba(2,6,23,0.6)}
+
+/* glassy sheen on tank */
+.bin-tank::before{content:'';position:absolute;left:8%;right:8%;top:6%;height:36%;background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0));transform:skewY(-6deg);pointer-events:none;border-radius:10px}
+
+.bin-fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,var(--accent1),#0ea05a);height:0%;transition:height 900ms cubic-bezier(.2,.9,.2,1),background 450ms;overflow:visible;border-top-left-radius:999px;border-top-right-radius:999px;box-shadow:0 0 20px rgba(14,160,90,0.4);backdrop-filter:blur(4px)}
+
+/* animated liquid surface (wave) */
+.bin-fill::after{content:'';position:absolute;left:-25%;width:150%;height:28px;top:0;background:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.03) 45%, transparent 65%);transform:translateX(0);opacity:0.95;border-radius:999px;pointer-events:none;mix-blend-mode:overlay}
+.bin-fill.wave::after{animation:wave var(--wave-speed,4s) linear infinite}
+
+@keyframes wave{
+  from{transform:translateX(-10%)}
+  to{transform:translateX(10%)}
+}
+
+/* color variants applied via JS */
+.bin-fill.state-medium{background:linear-gradient(180deg,var(--accent2),#f59e0b)}
+.bin-fill.state-high{background:linear-gradient(180deg,var(--accent3),#ef4444)}
+
+/* inner glossy overlay */
+.bin-tank::after{content:'';position:absolute;left:0;right:0;top:0;height:40%;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0));pointer-events:none}
+
+.bin-glow{position:absolute;left:-6%;right:-6%;bottom:0;height:0%;pointer-events:none;filter:blur(18px);opacity:0;transition:opacity .4s, height .6s}
+.bin-glow.glow-strong{opacity:0.95;height:100%;animation:glowPulse 1.6s infinite}
+.bin-glow.glow-medium{opacity:0.6;height:70%;animation:glowPulse 2.6s infinite}
+
+@keyframes glowPulse{
+  0%{transform:scaleY(0.98);filter:blur(14px)}
+  50%{transform:scaleY(1);filter:blur(20px)}
+  100%{transform:scaleY(0.98);filter:blur(14px)}
+}
+
+.bin-meta{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:14px}
+.bin-meta h2{font-size:18px;margin:0}
+.bin-percent{font-weight:700;font-size:18px;color:#ecfeff}
+
+.note{text-align:center;margin-top:18px;color:var(--muted)}
+
+@media (max-width:900px){
+  .bins{grid-template-columns:1fr;max-width:420px;margin:0 auto}
+  .bin-tank{width:260px;height:360px}
+}
+
+/* --- Recycling mini-game styles --- */
+.recycle-game{margin:22px 0;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px);position:relative}
+.recycle-game .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
+.recycle-game .game-info{display:flex;gap:18px;align-items:center}
+.recycle-game .score,.recycle-game .timer{font-weight:700;color:#ecfeff;background:rgba(0,0,0,0.18);padding:8px 12px;border-radius:8px}
+.recycle-game .game-controls button{background:linear-gradient(90deg,#06b6d4,#0ea5a5);border:none;padding:8px 12px;border-radius:8px;color:#002022;font-weight:700;cursor:pointer}
+.game-area{display:flex;gap:18px;align-items:flex-start}
+.palette{flex:1;min-height:120px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:10px;padding:10px;display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start}
+.game-instructions{width:320px;color:var(--muted);font-size:14px}
+.game-instructions p{margin:6px 0 0}
+.game-item{width:72px;height:72px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:grab;user-select:none;border:2px solid rgba(0,0,0,0.06);box-shadow:0 8px 26px rgba(0,0,0,0.25)}
+.game-item:active{cursor:grabbing}
+.game-item[data-type="plastic"]{background:linear-gradient(180deg,#adf7ff,#76e4ff)}
+.game-item[data-type="paper"]{background:linear-gradient(180deg,#fff7bf,#ffe08a)}
+.game-item[data-type="organic"]{background:linear-gradient(180deg,#d6f5d6,#9fe09f)}
+.game-item.correct{transform:scale(0.92);box-shadow:0 6px 18px rgba(0,0,0,0.12);opacity:0.9;transition:transform 220ms}
+.game-item.wrong{animation:shake .5s;filter:grayscale(20%)}
+
+@keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)}}
+
+/* confetti canvas overlays the game area */
+#confetti-canvas{position:absolute;left:0;right:0;top:0;bottom:0;width:100%;height:100%;pointer-events:none;z-index:30}
+
+@media (max-width:900px){
+  .game-area{flex-direction:column}
+  .game-instructions{width:auto}
+  .palette{min-height:160px}
+}

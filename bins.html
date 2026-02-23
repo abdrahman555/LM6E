@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bin Level Simulator</title>
+  <link rel="stylesheet" href="bins.css">
+</head>
+<body>
+  <header class="page-header">
+    <h1>Bin Level Simulator</h1>
+    <p class="lead">Three big bins showing fill-levels with dramatic color & pulse effects.</p>
+  </header>
+
+  <main class="bins-wrapper">
+    <div class="controls">
+      <button id="randomize">Randomize Levels</button>
+      <button id="set-low">Set Low</button>
+      <button id="set-medium">Set Medium</button>
+      <button id="set-high">Set High</button>
+    </div>
+
+    <!-- Recycling Mini-Game: drag items into the correct bin -->
+    <section class="recycle-game" aria-label="Recycling mini game">
+      <div class="game-header">
+        <div class="game-info">
+          <div class="score">Score: <span id="game-score">0</span></div>
+          <div class="timer">Time: <span id="game-timer">60</span>s</div>
+        </div>
+        <div class="game-controls">
+          <button id="game-start">Start Game</button>
+          <button id="game-reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="palette" id="palette" aria-hidden="false">
+          <!-- items are created dynamically -->
+        </div>
+
+        <div class="game-instructions">
+          <strong>How to play</strong>
+          <p>Drag the items into the correct bin (Bin A = Plastic, Bin B = Paper, Bin C = Organic). Earn points for correct sorting. Have fun!</p>
+        </div>
+      </div>
+
+      <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+    </section>
+
+    <section class="bins">
+      <div class="bin-card" data-id="A" data-category="plastic">
+        <div class="bin-tank">
+          <div class="bin-fill" style="height:0%"></div>
+          <div class="bin-glow"></div>
+        </div>
+        <div class="bin-meta">
+          <h2>Bin A</h2>
+          <div class="bin-percent">0%</div>
+        </div>
+      </div>
+
+      <div class="bin-card" data-id="B" data-category="paper">
+        <div class="bin-tank">
+          <div class="bin-fill" style="height:0%"></div>
+          <div class="bin-glow"></div>
+        </div>
+        <div class="bin-meta">
+          <h2>Bin B</h2>
+          <div class="bin-percent">0%</div>
+        </div>
+      </div>
+
+      <div class="bin-card" data-id="C" data-category="organic">
+        <div class="bin-tank">
+          <div class="bin-fill" style="height:0%"></div>
+          <div class="bin-glow"></div>
+        </div>
+        <div class="bin-meta">
+          <h2>Bin C</h2>
+          <div class="bin-percent">0%</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="note">Tip: Click a card to toggle manual animation. Full bins pulse with a strong glow.</footer>
+  </main>
+
+  <script src="bins.js"></script>
+</body>
+</html>

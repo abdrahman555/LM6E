@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LM6E SMART - Smart Waste Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth-buttons.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Use the provided image as the hero background */
+        .hero {
+            background-image: url("image.png");
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: #e9ecef; /* fallback color while image loads */
+            position: relative;
+            color: #fff;
+            min-height: 60vh; /* ensure visible hero area */
+            display: flex;
+            align-items: center;
+        }
+
+        /* Darken the image for readable text */
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35));
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Ensure hero content sits above the overlay */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            padding: 40px;
+        }
+
+        /* Hero title styling */
+        .main-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 80px;
+            line-height: 1;
+            margin: 0 0 8px;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.45);
+            animation: titlePop .9s cubic-bezier(.2,.9,.3,1) both;
+        }
+
+        .main-title .accent {
+            color: #ffffff;
+            display: inline-block;
+            margin-left: 6px;
+        }
+
+        @keyframes titlePop {
+            from { transform: translateY(8px) scale(.98); opacity: 0; filter: blur(6px); }
+            to   { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); }
+        }
+
+        /* Responsive scaling */
+        @media (max-width: 992px) {
+            .main-title { font-size: 60px; }
+        }
+        @media (max-width: 480px) {
+            .main-title { font-size: 44px; }
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 768px) {
+            .hero {
+                background-attachment: scroll;
+                background-position: center top;
+                min-height: 50vh;
+            }
+            .hero-content {
+                padding: 20px;
+            }
+        }
+
+        /* Adjust button position */
+        #explore-btn {
+            margin-top: 30px;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    <nav id="navbar">
+        <div class="navbar-bg"></div>
+        <div class="nav-container">
+            <img src="assets/images/lycee-logo.png" alt="Lycee Logo" class="nav-logo">
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#map">Map</a></li>
+                <li class="admin-only"><a href="#reports">Reports</a></li>
+                <li><a href="#statistics">Statistics</a></li>
+                <li class="admin-only"><a href="#performance">Performance</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+            <div class="nav-actions">
+                <span id="userInfo"></span>
+                <button id="theme-toggle" aria-label="Toggle theme"></button>
+                <button id="logoutBtn" onclick="logout()" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-overlay"></div>
+        <!-- left hero card removed per request -->
+        <div class="hero-content">
+
+            <!-- Improved, larger title with accent -->
+            <h1 class="main-title" aria-label="LM6E Smart">
+                LM6E <span class="accent">SMART</span>
+            </h1>
+
+            <button id="explore-btn" class="cta-button">Explore Our Solutions</button>
+
+            <div class="auth-buttons">
+                <a href="login.html" class="auth-hero-btn signin-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    Sign In
+                </a>
+                <a href="login.html#signup" class="auth-hero-btn signup-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    Sign Up
+                </a>
+            </div>
+
+            <div id="hero-stats" class="hero-stats">
+                <!-- Dynamic stats loaded from stats.json -->
+            </div>
+
+        </div>
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+        <div class="customization-panel">
+            <button id="customize-btn">Customize Theme</button>
+            <div id="customize-options" class="customize-options">
+                <label for="mood-select">Choose Mood:</label>
+                <select id="mood-select">
+                    <option value="default">Default</option>
+                    <option value="nature">Nature</option>
+                    <option value="ocean">Ocean</option>
+                    <option value="sunset">Sunset</option>
+                    <option value="forest">Forest</option>
+                    <option value="minimalist">Minimalist</option>
+                </select>
+                <label for="primary-color">Primary Color:</label>
+                <input type="color" id="primary-color" value="#007bff">
+                <label for="font-family">Font Family:</label>
+                <select id="font-family">
+                    <option value="'Poppins', sans-serif">Poppins</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <section id="map" class="section">
+        <h2>Interactive Map</h2>
+        <div class="map-controls">
+            <input type="text" id="city-search" placeholder="Search city...">
+            <button id="view-toggle">Satellite</button>
+            <button id="fullscreen-toggle">Fullscreen</button>
+            <select id="layer-toggle">
+                <option value="all">All Layers</option>
+                <option value="heatmap">Heatmap</option>
+                <option value="traffic">Traffic</option>
+                <option value="full">Full Bins Only</option>
+            </select>
+            <button id="optimize-route">Optimize Route</button>
+            <button id="driver-mode-toggle">Driver Mode</button>
+            <div id="driver-controls" class="driver-controls" style="display: none;">
+                <button id="road-view-toggle"><i class="fas fa-road"></i> Road View</button>
+                <button id="gps-location"><i class="fas fa-map-marker-alt"></i> GPS Location</button>
+                <button id="traffic-toggle"><i class="fas fa-traffic-light"></i> Traffic</button>
+                <button id="directions-btn"><i class="fas fa-directions"></i> Directions</button>
+                <button id="tracking-toggle"><i class="fas fa-play"></i> Start Tracking</button>
+                <button id="start-route-btn" class="start-btn" style="display: none;"><i class="fas fa-play-circle"></i> START</button>
+            </div>
+        </div>
+        <div id="map-container"></div>
+    </section>
+
+    <section id="reports" class="reports-section">
+        <div class="wave-background">
+            <div class="wave"></div>
+            <div class="wave"></div>
+        </div>
+        <div class="reports-header">
+            <h2>Smart Reports</h2>
+            <p>Comprehensive analytics and intelligent waste management insights</p>
+        </div>
+        <div class="reports-controls">
+            <input type="text" class="search-bar" placeholder="Search reports...">
+            <select class="filter-select">
+                <option value="all">All Categories</option>
+                <option value="collection">Collection Reports</option>
+                <option value="analytics">Analytics</option>
+                <option value="efficiency">Efficiency Metrics</option>
+            </select>
+            <select class="filter-select">
+                <option value="all">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+            </select>
+        </div>
+        <div class="reports-grid">
+            <!-- Report Cards -->
+            <div class="report-card" style="animation-delay: 0.2s">
+                <h3 class="report-title">Monthly Collection Analytics</h3>
+                <p class="report-date">October 20, 2025</p>
+                <span class="report-status status-completed">Completed</span>
+            </div>
+            <div class="report-card" style="animation-delay: 0.4s">
+                <h3 class="report-title">Route Optimization Report</h3>
+                <p class="report-date">October 19, 2025</p>
+                <span class="report-status status-in-progress">In Progress</span>
+            </div>
+            <div class="report-card" style="animation-delay: 0.6s">
+                <h3 class="report-title">Waste Segregation Analysis</h3>
+                <p class="report-date">October 18, 2025</p>
+                <span class="report-status status-completed">Completed</span>
+            </div>
+            <div class="report-card" style="animation-delay: 0.8s">
+                <h3 class="report-title">Fleet Performance Metrics</h3>
+                <p class="report-date">October 17, 2025</p>
+                <span class="report-status status-pending">Pending</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="about-background">
+            <div class="about-wave"></div>
+        </div>
+        <div class="about-header">
+            <h2>About LM6E SMART</h2>
+            <p>Revolutionizing Waste Management for a Sustainable Future</p>
+        </div>
+        <div class="about-content">
+            <div class="mission-card">
+                <h3>Our Mission</h3>
+                <p>LM6E SMART is revolutionizing waste management with innovative solutions for smarter cities. Our project leverages cutting-edge IoT technology, advanced analytics, and sustainable practices to optimize waste collection, reduce environmental impact, and enhance urban living standards.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="team-zone-section">
+        <div class="team-zone-header">
+            <h2>Meet Our Team</h2>
+            <p>The dedicated professionals behind LM6E SMART's innovative waste management solutions</p>
+        </div>
+        <div class="team-zone-grid">
+            <div class="team-zone-card">
+                <div class="team-zone-img-wrapper">
+                    <img src="assets/images/abdo.png" alt="Abderrahman El Ghazoui">
+                </div>
+                <div class="team-zone-info">
+                    <h4>Abderrahman El Ghazoui</h4>
+                    <span class="team-zone-role">Team Owner and Developer</span>
+                </div>
+            </div>
+            <div class="team-zone-card">
+                <div class="team-zone-img-wrapper">
+                    <img src="assets/images/bilal.png" alt="AIT LHAJ Bilal">
+                </div>
+                <div class="team-zone-info">
+                    <h4>AIT LHAJ Bilal</h4>
+                    <span class="team-zone-role">Team Member</span>
+                </div>
+            </div>
+            <div class="team-zone-card">
+                <div class="team-zone-img-wrapper">
+                    <img src="assets/images/nouredin.jpg" alt="BAKKOU Noureddin">
+                </div>
+                <div class="team-zone-info">
+                    <h4>BAKKOU Noureddin</h4>
+                    <span class="team-zone-role">Team Member</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section id="statistics" class="statistics-section">
+        <div class="stats-background">
+            <div class="stats-wave"></div>
+        </div>
+        
+        <div class="stats-header">
+            <h2>Smart Analytics Dashboard</h2>
+            <p>Real-time insights and performance metrics</p>
+        </div>
+
+        <div class="stats-controls">
+            <div class="controls-group">
+                <select id="chart-type" class="stats-select">
+                    <option value="bar">Bar Chart</option>
+                    <option value="line">Line Chart</option>
+                    <option value="pie">Pie Chart</option>
+                </select>
+                <select id="time-period" class="stats-select">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+                <select id="region-filter" class="stats-select">
+                    <option value="all">All Regions</option>
+                    <option value="Rabat">Rabat</option>
+                    <option value="Casablanca">Casablanca</option>
+                    <option value="Marrakech">Marrakech</option>
+                    <option value="Tangier">Tangier</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button id="refresh-data" class="stats-btn"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button id="download-csv" class="stats-btn"><i class="fas fa-download"></i> CSV</button>
+                <button id="download-pdf" class="stats-btn"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+        </div>
+
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Active Bins</h3>
+                    <div class="counter" data-target="1000">0</div>
+                    <p>Smart bins deployed</p>
+                </div>
+                <div class="stat-chart mini">
+                    <canvas id="mini-chart-1"></canvas>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Waste Collected</h3>
+                    <div class="counter" data-target="500">0</div>
+                    <p>Tons this month</p>
+                </div>
+                <div class="stat-chart mini">
+                    <canvas id="mini-chart-2"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card large">
+                <h3>Waste Collection Trends</h3>
+                <div class="chart-container">
+                    <canvas id="trends-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Waste Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="distribution-chart"></canvas>
+                </div>
+            </div>
+            <!-- Removed CO2 Savings by City chart -->
+            <div class="chart-card">
+                <h3>Regional Analysis</h3>
+                <div class="chart-container">
+                    <canvas id="bins-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Efficiency Metrics</h3>
+                <div class="chart-container">
+                    <canvas id="efficiency-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Cost Analysis</h3>
+                <div class="chart-container">
+                    <canvas id="cost-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card large minimalist-chart">
+                <h3>Waste Trends Overview</h3>
+                <div class="chart-controls">
+                    <button id="minimalist-type-toggle" class="chart-type-btn active">Line</button>
+                    <button id="minimalist-type-toggle-bar" class="chart-type-btn">Bar</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="minimalist-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="performance" class="performance-section">
+        <div class="performance-background">
+            <div class="gradient-overlay"></div>
+        </div>
+
+        <div class="performance-header">
+            <h2>Performance Dashboard</h2>
+            <p>Real-time operational excellence metrics</p>
+        </div>
+
+        <div class="performance-nav">
+            <button class="perf-nav-btn active" data-view="overview">
+                <i class="fas fa-th-large"></i> Overview
+            </button>
+            <button class="perf-nav-btn" data-view="efficiency">
+                <i class="fas fa-tachometer-alt"></i> Efficiency
+            </button>
+            <button class="perf-nav-btn" data-view="environmental">
+                <i class="fas fa-leaf"></i> Environmental
+            </button>
+            <button class="perf-nav-btn" data-view="financial">
+                <i class="fas fa-chart-line"></i> Financial
+            </button>
+        </div>
+
+        <div class="performance-overview active" id="overview">
+            <div class="kpi-grid">
+                <div class="kpi-card highlight">
+                    <div class="kpi-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Overall Performance Score</h3>
+                        <div class="kpi-value">94.8%</div>
+                        <div class="kpi-trend positive">
+                            <i class="fas fa-arrow-up"></i> +2.3%
+                        </div>
+                    </div>
+                    <div class="circular-progress" data-value="94.8"></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>On-Time Collection Rate</h3>
+                        <div class="kpi-value">98.2%</div>
+                        <div class="kpi-trend positive">
+                            <i class="fas fa-arrow-up"></i> +1.5%
+                        </div>
+                    </div>
+                    <div class="progress-ring" data-value="98.2"></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-gas-pump"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Fuel Efficiency</h3>
+                        <div class="kpi-value">87.5%</div>
+                        <div class="kpi-trend positive">
+                            <i class="fas fa-arrow-up"></i> +3.2%
+                        </div>
+                    </div>
+                    <div class="progress-ring" data-value="87.5"></div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <h3>Waste Processing Rate</h3>
+                        <div class="kpi-value">92.3%</div>
+                        <div class="kpi-trend positive">
+                            <i class="fas fa-arrow-up"></i> +1.8%
+                        </div>
+                    </div>
+                    <div class="progress-ring" data-value="92.3"></div>
+                </div>
+            </div>
+
+            <div class="performance-details">
+                <div class="detail-card">
+                    <h3>Real-Time Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Active Trucks</span>
+                            <span class="metric-value">42/45</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Routes Completed</span>
+                            <span class="metric-value">89/95</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Bins Collected</span>
+                            <span class="metric-value">1,247</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Service Calls</span>
+                            <span class="metric-value">12</span>
+                        </div>
+                    </div>
+                </div>
+                <h3>Performance Timeline</h3>
+                <div class="timeline-chart">
+                    <canvas id="performanceTimeline"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-cards">
+            <div class="data-card">
+                <div class="data-header">
+                    <h4>Route Optimization</h4>
+                    <span class="data-period">Last 30 Days</span>
+                </div>
+                <div class="data-chart">
+                    <canvas id="routeOptimizationChart"></canvas>
+                </div>
+                <div class="data-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Distance Saved</span>
+                        <span class="stat-value">1,234 km</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Time Saved</span>
+                        <span class="stat-value">127 hrs</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="data-header">
+                    <h4>Resource Utilization</h4>
+                    <span class="data-period">Real-time</span>
+                </div>
+                <div class="data-chart">
+                    <canvas id="resourceUtilizationChart"></canvas>
+                </div>
+                <div class="data-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Fleet Efficiency</span>
+                        <span class="stat-value">94.2%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Staff Productivity</span>
+                        <span class="stat-value">96.7%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>LM6E SMART</h4>
+                <p>Revolutionizing waste management for smarter cities through innovative technology and sustainable practices.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#map">Map</a></li>
+                    <li><a href="#reports">Reports</a></li>
+                    <li><a href="#statistics">Statistics</a></li>
+                    <li><a href="#insights">Insights</a></li>
+                    <li><a href="#performance">Performance</a></li>
+                    <li><a href="#about">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect With Us</h4>
+                <div class="social-media">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 LM6E SMART. Developed by the LM6E Team. All rights reserved.</p>
+            <div id="footer-photos"></div>
+        </div>
+    </footer>
+
+    <div id="notifications-panel">
+        <h3>Real-time Alerts</h3>
+        <div id="alerts-list"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Performance Section Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Performance Timeline Chart
+            const timelineCtx = document.getElementById('performanceTimeline').getContext('2d');
+            new Chart(timelineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                    datasets: [{
+                        label: 'Overall Performance',
+                        data: [88, 89, 90, 89, 91, 92, 93, 93, 94, 94.8],
+                        borderColor: '#5e72e4',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(94, 114, 228, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Performance Timeline'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

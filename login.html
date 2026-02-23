@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Login - LM6E SMART</title>
+	<link rel="stylesheet" href="styles.css">
+	<style>
+		/* Minimal standalone styles for the auth page */
+		body { font-family: 'Poppins', sans-serif; margin: 0; background-image: url('assets/images/campus-bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; color:#222; }
+		.auth-page { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; }
+		.auth-card { width:100%; max-width:420px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)); background-size: cover; background-position: center; backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius:12px; box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37); padding:28px; position: relative; }
+		.auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('assets/images/campus-bg.jpg'); background-size: cover; background-position: center; opacity: 0.7; border-radius: inherit; z-index: -2; }
+		.auth-card::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 50%; background: inherit; border-radius: inherit; transform: scaleY(-1); opacity: 0.5; filter: blur(1px); z-index: -1; }
+		.auth-logo { display:block; margin:0 auto 12px; width:200px; height:auto; border-radius:12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); transition: transform 0.3s ease; }
+		.auth-logo:hover { transform: scale(1.05); }
+		.auth-title { text-align:center; margin:0 0 8px; font-size:24px; font-weight:800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+		.auth-sub { text-align:center; margin:0 0 18px; color:#333333; font-size:14px; font-weight:500; opacity: 0.9; }
+		.tabs { display:flex; gap:8px; justify-content:center; margin-bottom:18px; }
+		.tab-btn { padding:10px 16px; border-radius:12px; border:1px solid transparent; background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1)); backdrop-filter: blur(10px); cursor:pointer; font-weight:600; color:#333333; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+		.tab-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); transition: left 0.5s ease; }
+		.tab-btn:hover::before { left: 100%; }
+		.tab-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+		.tab-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; border-color:rgba(102,126,234,0.3); box-shadow: 0 4px 16px rgba(102,126,234,0.3); }
+		.form { display:none; }
+		.form.active { display:block; }
+		.input { width:100%; padding:12px 14px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.3); border-radius:10px; font-size:14px; background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); color:#222; transition: border-color 0.3s ease; }
+		.input:focus { border-color: #667eea; outline: none; box-shadow: 0 0 0 2px rgba(102,126,234,0.2); }
+		.primary-btn { width:100%; display:inline-block; padding:12px 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102,126,234,0.3); position: relative; overflow: hidden; }
+		.primary-btn::before { content: '🔐'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; }
+		.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+		.primary-btn:hover::before { transform: translateY(-50%) scale(1.1); }
+		.secondary { background:transparent; color:#667eea; border:none; cursor:pointer; text-decoration: none; padding:0; font-weight:600; transition: color 0.3s ease; position: relative; }
+		.secondary::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #667eea; transition: width 0.3s ease; }
+		.secondary:hover::after { width: 100%; }
+		.secondary:hover { color: #764ba2; }
+		.small-note { margin-top:12px; text-align:center; font-size:13px; color:#333333; }
+		.back-link { display:block; text-align:center; margin-top:12px; color:#333333; font-size:14px; text-decoration:none; transition: all 0.3s ease; position: relative; }
+		.back-link::before { content: '←'; margin-right: 4px; transition: transform 0.3s ease; }
+		.back-link:hover { color: #667eea; transform: translateX(-4px); }
+		.back-link:hover::before { transform: translateX(-4px); }
+		@media (max-width:420px){ .auth-card{ padding:18px; } .auth-logo{ width:120px; } .tab-btn { padding:8px 12px; font-size: 14px; } .primary-btn { padding:10px 12px; } }
+	</style>
+</head>
+<body>
+	<div class="auth-page">
+		<div class="auth-card" role="main" aria-labelledby="auth-heading">
+			<img src="assets/images/lycee-logo.png" alt="LM6E Logo" class="auth-logo">
+			<h1 id="auth-heading" class="auth-title">Welcome to LM6E SMART</h1>
+			<p class="auth-sub">Sign in to continue or create a new account</p>
+
+			<div class="tabs" role="tablist" aria-label="Authentication tabs">
+				<button id="tab-signin" class="tab-btn active" role="tab" aria-selected="true">Sign In</button>
+				<a href="signup-new.html" class="tab-btn" role="tab" aria-selected="false">Sign Up</a>
+			</div>
+
+			<form id="signin-form" class="form active" onsubmit="event.preventDefault(); alert('Sign in submitted (placeholder)')">
+				<input class="input" type="email" name="email" placeholder="Email" required>
+				<input class="input" type="password" name="password" placeholder="Password" required>
+				<button class="primary-btn" type="submit">Sign In Securely</button>
+				<div class="small-note">
+					<button class="secondary" type="button" onclick="alert('Reset link (placeholder)')">Forgot password?</button>
+				</div>
+			</form>
+
+			<form id="signup-form" class="form" onsubmit="event.preventDefault(); alert('Sign up submitted (placeholder)')">
+				<input class="input" type="text" name="name" placeholder="Full name" required>
+				<input class="input" type="email" name="email" placeholder="Email" required>
+				<input class="input" type="password" name="password" placeholder="Password" required>
+				<input class="input" type="password" name="confirm" placeholder="Confirm password" required>
+				<button class="primary-btn" type="submit">Create Your Account</button>
+				<p class="small-note">By creating an account you agree to our terms.</p>
+			</form>
+
+			<a href="index.html" class="back-link">← Back to Home</a>
+		</div>
+	</div>
+
+	<script>
+		// Tab switching and hash handling (login.html and login.html#signup)
+		(function(){
+			const signinTab = document.getElementById('tab-signin');
+			const signinForm = document.getElementById('signin-form');
+			const signupForm = document.getElementById('signup-form');
+
+			function showSignIn(){
+				signinTab.classList.add('active'); signinTab.setAttribute('aria-selected','true');
+				signinForm.classList.add('active'); signupForm.classList.remove('active');
+				history.replaceState(null, '', 'login.html'); // remove hash if any
+			}
+
+			signinTab.addEventListener('click', showSignIn);
+
+			// Show sign up if URL contains #signup (index.html uses login.html#signup)
+			if(location.hash === '#signup') {
+				signupForm.classList.add('active'); signinForm.classList.remove('active');
+				// ensure focus on first input of signup form
+				signupForm.querySelector('input')?.focus();
+			} else {
+				showSignIn();
+			}
+		})();
+	</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+[
+  {"id": "BIN001", "lat": 31.6295, "lng": -7.9811, "fill": 20, "type": "Organic", "operationTime": 5},
+  {"id": "BIN002", "lat": 33.5731, "lng": -7.5898, "fill": 50, "type": "Plastic", "operationTime": 7},
+  {"id": "BIN003", "lat": 30.4278, "lng": -9.5981, "fill": 80, "type": "Paper", "operationTime": 10},
+  {"id": "BIN004", "lat": 34.0209, "lng": -6.8416, "fill": 10, "type": "Glass", "operationTime": 8},
+  {"id": "BIN005", "lat": 35.7595, "lng": -5.8339, "fill": 60, "type": "Metal", "operationTime": 12}
+]
